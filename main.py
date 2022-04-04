@@ -12,6 +12,7 @@ v.root.resizable(False, False)
 v.root.geometry(str(v.window_size_x) + "x" + str(v.window_size_y))
 v.canvas = Canvas(v.root, width=v.window_size_x, height=v.window_size_y, background="white")
 v.canvas.bind('<Button-1>', f.MousePressed)
+v.root.bind("<KeyRelease>", f.ButtonPressed)
 v.canvas.pack()
 
 for i in range(v.rows_columns_num):

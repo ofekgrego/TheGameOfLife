@@ -3,7 +3,10 @@ class v(object):
     window_size_x = 500
     window_size_y = 500
 
-    rows_columns_num = 30
+    rows_columns_num = 25
+
+    auto_move = False
+    auto_move_func = None
 
     grid = []
     grid_of_objects = []

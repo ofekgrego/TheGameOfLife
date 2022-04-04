@@ -17,8 +17,7 @@ def MousePressed(event):
     else:
         v.grid[pressed_block_x][pressed_block_y] = 0
         v.canvas.delete(v.grid_of_objects[pressed_block_x][pressed_block_y])
-
-    CheckNeighbours(pressed_block_x, pressed_block_y)
+        v.grid_of_objects[pressed_block_x][pressed_block_y] = 0
 
 def CheckNeighbours(place_x,place_y):
     #Check if need to change
@@ -61,9 +60,60 @@ def CheckNeighbours(place_x,place_y):
         if (v.grid[place_x + 1][place_y + 1] == 1):
             count_of_live_neighbours += 1
             # print("Can RightDown")
+
+    if(v.grid[place_x][place_y] == 1):
+        if((count_of_live_neighbours < 2) | (count_of_live_neighbours > 3)):
+            return 0
+        else:
+            return 1
+    if(count_of_live_neighbours == 3):
+        return 1
+    return 0
+
     return count_of_live_neighbours
+
+def MakeObjects(grid):
+    global grid_of_objects
+    for x in range(0,v.rows_columns_num):
+        for y in range(0, v.rows_columns_num):
+            if((grid[x][y] == 0) & (v.grid_of_objects[x][y] != 0)):
+                v.canvas.delete(v.grid_of_objects[x][y])
+                v.grid_of_objects[x][y] = 0
+            elif((grid[x][y] == 1)) & (v.grid_of_objects[x][y] == 0):
+                block_size = v.window_size_x / v.rows_columns_num
+                v.grid_of_objects[x][y] = v.canvas.create_rectangle(
+                    x * block_size,
+                    y * block_size,
+                    (x + 1) * block_size
+                    , (y + 1) * block_size, fill="black")
+
 
 
 def MoveGen():
-    # move all the tiles a gen
-    print("Move Gen")
+    global grid
+    new_gen_grid = []
+    for x in range(0, v.rows_columns_num):
+        row = []
+        for y in range(0, v.rows_columns_num):
+            # print(CheckNeighbours(x,y))
+            row.append(CheckNeighbours(x,y))
+        new_gen_grid.append(row)
+    v.grid = new_gen_grid
+    MakeObjects(v.grid)
+
+def AutoMove():
+    global auto_move_func
+    MoveGen()
+    v.auto_move_func = v.canvas.after(200, AutoMove)
+
+def ButtonPressed(event):
+    global auto_move,grid,grid_of_objects
+    if (event.keysym == 'space'):
+        MoveGen()
+    if (event.keysym == 'a'):
+        if(v.auto_move == False):
+            v.auto_move = True
+            AutoMove()
+        else:
+            v.canvas.after_cancel(v.auto_move_func)
+            v.auto_move = False
